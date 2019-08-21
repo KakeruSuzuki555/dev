@@ -13,8 +13,8 @@ export class CanvasTest {
 
         this.gl = <WebGL2RenderingContext>this.canvas.getContext('webgl2');
 
-        this.gl.clearColor(0.0, 0.0, 0.0, 1.0);　// 画面カラーの初期化
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT); // 画面の初期化
+        // this.gl.clearColor(0.0, 0.0, 0.0, 1.0);　// 画面カラーの初期化
+        // this.gl.clear(this.gl.COLOR_BUFFER_BIT); // 画面の初期化
 
     }
 }

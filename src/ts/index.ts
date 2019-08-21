@@ -1,4 +1,5 @@
 import { CanvasTest } from './canvasTest'
-
-new CanvasTest();
-
+import { ThreeJsTest } from './threeJsTest'
+import '../css/index.scss'
+// new CanvasTest();
+new ThreeJsTest();
