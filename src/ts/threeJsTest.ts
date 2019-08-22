@@ -4,7 +4,7 @@ export class ThreeJsTest {
 
     private wrap: HTMLElement;
     private canvas: HTMLCanvasElement;
-    
+
     /** レンダラー作成 */
     private renderer: THREE.WebGLRenderer;
 
@@ -15,9 +15,13 @@ export class ThreeJsTest {
     private camera: THREE.PerspectiveCamera;
 
     /** 箱を作成 */
-    private geometry: THREE.BoxGeometry;
+    // private boxGeometry: THREE.BoxGeometry;
+    private sphereGeometry: THREE.SphereGeometry;
     private material: THREE.MeshNormalMaterial;
     private box: THREE.Mesh;
+
+    /** 平行光源 */
+    private directionalLight: THREE.DirectionalLight;
 
     constructor(){
 
@@ -40,10 +44,17 @@ export class ThreeJsTest {
         this.camera = new THREE.PerspectiveCamera(45, this.wrap.offsetWidth / this.wrap.offsetHeight);
         this.camera.position.set(0, 0, +1000);
 
-        this.geometry = new THREE.BoxGeometry(400, 400, 400);
-        this.material = new THREE.MeshNormalMaterial();
-        this.box = new THREE.Mesh(this.geometry, this.material);
+        // this.boxGeometry = new THREE.BoxGeometry(400, 400, 400);
+        this.sphereGeometry = new THREE.SphereGeometry(300, 30, 30);
+        // this.material = new THREE.MeshNormalMaterial();
+        this.material = new THREE.MeshStandardMaterial({color:0xFF0000});
+        this.box = new THREE.Mesh(this.sphereGeometry, this.material);
+
         this.scene.add(this.box);
+        this.directionalLight = new THREE.DirectionalLight(0xFFFFFF);
+        this.directionalLight.position.set(1, 1, 1);
+
+        this.scene.add(this.directionalLight);
         this.tick();
     }
 
