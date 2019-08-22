@@ -23,6 +23,8 @@ export class ThreeJsTest {
     /** 平行光源 */
     private directionalLight: THREE.DirectionalLight;
 
+    private rot: number = 0;
+
     constructor(){
 
         this.wrap = <HTMLElement>document.getElementById('wrapper');
@@ -31,6 +33,7 @@ export class ThreeJsTest {
 
         this.canvas.width = this.wrap.offsetWidth;
         this.canvas.height = this.wrap.offsetHeight;
+
 
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas
@@ -51,6 +54,7 @@ export class ThreeJsTest {
         this.box = new THREE.Mesh(this.sphereGeometry, this.material);
 
         this.scene.add(this.box);
+        this.createStarField();
         this.directionalLight = new THREE.DirectionalLight(0xFFFFFF);
         this.directionalLight.position.set(1, 1, 1);
 
@@ -58,8 +62,37 @@ export class ThreeJsTest {
         this.tick();
     }
 
+    createStarField () {
+
+        const geometry: THREE.Geometry = new THREE.Geometry();
+        for (let i = 0; i < 1000; i++) {
+            geometry.vertices.push(
+                new THREE.Vector3(
+                    3000 * (Math.random() - 0.5),
+                    3000 * (Math.random() - 0.5),
+                    3000 * (Math.random() - 0.5)
+                )
+            );
+        }
+
+        const material: THREE.PointsMaterial = new THREE.PointsMaterial({
+            size: 10,
+            color: 0xffffff
+        });
+
+        const mesh = new THREE.Points(geometry, material);
+        this.scene.add(mesh);
+    }
+
     tick () {
-        this.box.rotation.y += 0.01;
+        this.rot += 0.5;
+
+        const radian = (this.rot * Math.PI) / 180;
+        // this.box.rotation.y += 0.01;
+        this.camera.position.x = 1000 * Math.sin(radian);
+        this.camera.position.y = 1000 * Math.cos(radian);
+
+        this.camera.lookAt(new THREE.Vector3(0, 0, 0));
         this.renderer.render(this.scene, this.camera);
 
         requestAnimationFrame(this.tick.bind(this));
