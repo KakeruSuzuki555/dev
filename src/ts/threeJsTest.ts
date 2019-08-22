@@ -23,7 +23,10 @@ export class ThreeJsTest {
     /** 平行光源 */
     private directionalLight: THREE.DirectionalLight;
 
+    /** 回転の値 */
     private rot: number = 0;
+
+    private mouseX: number = 0;
 
     constructor(){
 
@@ -34,6 +37,8 @@ export class ThreeJsTest {
         this.canvas.width = this.wrap.offsetWidth;
         this.canvas.height = this.wrap.offsetHeight;
 
+        /** イベントセット */
+        this.mouseEvent();
 
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas
@@ -47,9 +52,7 @@ export class ThreeJsTest {
         this.camera = new THREE.PerspectiveCamera(45, this.wrap.offsetWidth / this.wrap.offsetHeight);
         this.camera.position.set(0, 0, +1000);
 
-        // this.boxGeometry = new THREE.BoxGeometry(400, 400, 400);
         this.sphereGeometry = new THREE.SphereGeometry(300, 30, 30);
-        // this.material = new THREE.MeshNormalMaterial();
         this.material = new THREE.MeshStandardMaterial({color:0xFF0000});
         this.box = new THREE.Mesh(this.sphereGeometry, this.material);
 
@@ -60,6 +63,12 @@ export class ThreeJsTest {
 
         this.scene.add(this.directionalLight);
         this.tick();
+    }
+
+    mouseEvent () {
+        document.addEventListener("mousemove", (event) => {
+            this.mouseX = event.pageX;
+        })
     }
 
     createStarField () {
@@ -85,10 +94,17 @@ export class ThreeJsTest {
     }
 
     tick () {
-        this.rot += 0.5;
+        // マウスの位置に応じて角度を設定
+        // マウスのX座標がステージに対して何％の位置にあるか調べ、360度で乗算
+        const targetRot: number = (this.mouseX / window.innerWidth) * 360;
+        
+        // イージングの公式を用いて滑らかにする
+        // 値 += (目標値 - 現在の値) * 減速値
+        this.rot += (targetRot - this.rot) * 0.02;
 
+        // ラジアンに変換する
         const radian = (this.rot * Math.PI) / 180;
-        // this.box.rotation.y += 0.01;
+
         this.camera.position.x = 1000 * Math.sin(radian);
         this.camera.position.y = 1000 * Math.cos(radian);
 
