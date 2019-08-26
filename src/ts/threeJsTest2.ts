@@ -1,6 +1,7 @@
 import * as THREE from 'three';
+import { Vec2 } from 'three';
 
-export class ThreeJsTest {
+export class ThreeJsTest2 {
 
     private wrap: HTMLElement;
     private canvas: HTMLCanvasElement;
