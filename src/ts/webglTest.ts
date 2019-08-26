@@ -14,41 +14,52 @@ export class WebglTest {
         this.canvas.width = this.wrap.offsetWidth;
         this.canvas.height = this.wrap.offsetHeight;
 
+        // コンテキストの取得
         this.gl = <WebGL2RenderingContext>this.canvas.getContext('webgl2');
 
+        // 各シェーダのソース取得
         this.vShaderSouce = this.vertexShaderObj();
         this.fShaderSouce = this.fragmentShaderObj();
 
+        // vertexShaderの生成からコンパイルまで
         const vertexShader: WebGLShader = <WebGLShader>this.gl.createShader(this.gl.VERTEX_SHADER);
         this.gl.shaderSource(vertexShader, this.vShaderSouce);
         this.gl.compileShader(vertexShader);
+        // コンパイルチェック
         const vShaderCompileStatus = this.gl.getShaderParameter(vertexShader, this.gl.COMPILE_STATUS);
         if (!vShaderCompileStatus) {
             const info = this.gl.getShaderInfoLog(vertexShader);
             console.log(info);
         }
 
+        // fragmentShaderの生成からコンパイルまで
         const fragmentShader: WebGLShader = <WebGLShader>this.gl.createShader(this.gl.FRAGMENT_SHADER);
         this.gl.shaderSource(fragmentShader, this.fShaderSouce);
         this.gl.compileShader(fragmentShader);
+        // コンパイルチェック
         const fShaderComileStatus = this.gl.getShaderParameter(fragmentShader, this.gl.COMPILE_STATUS);
         if (!fShaderComileStatus) {
             const info = this.gl.getShaderInfoLog(fragmentShader);
             console.log(info);
         }
 
+        // fragmentShaderとvertexShaderのリンク
         const program: WebGLProgram = <WebGLProgram>this.gl.createProgram();
         this.gl.attachShader(program, vertexShader);
         this.gl.attachShader(program, fragmentShader);
         this.gl.linkProgram(program);
         const linkStatus = this.gl.getProgramParameter(program, this.gl.LINK_STATUS);
+        // リンクチェック
         if (!linkStatus) {
             const info = this.gl.getProgramInfoLog(program);
             console.log(info);
         }
+        // プログラムを有効化
         this.gl.useProgram(program);
 
+        // 位置情報のバッファー作成
         const vertexBuffer = this.gl.createBuffer();
+        // 色情報のバッファー作成
         const colorBuffer = this.gl.createBuffer();
 
         // vertexShaderのin変数の位置を取得
@@ -58,12 +69,13 @@ export class WebglTest {
         const vertexSize = 3; // vec3
         const colorSize = 4; // vec4
 
-        // バッファーのバインド
+        // 位置情報のバッファーのバインド
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
         // in変数を有効化
         this.gl.enableVertexAttribArray(vertexAtttibLocation);
         this.gl.vertexAttribPointer(vertexAtttibLocation, vertexSize, this.gl.FLOAT, false, 0, 0);
 
+        // 色情報のバッファーのバインド
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
         this.gl.enableVertexAttribArray(colorAttribLocation);
         this.gl.vertexAttribPointer(colorAttribLocation, colorSize, this.gl.FLOAT, false, 0, 0);
@@ -81,9 +93,9 @@ export class WebglTest {
         // 色情報
         // vec4なので4つずつ
         const colors = new Float32Array([
-            1.0, 0.0, 0.0, 1.0,
-            0.0, 1.0, 0.0, 1.0,
-            0.0, 0.0, 1.0, 1.0,
+            1.0, 0.0, 0.0, 0.5,
+            0.0, 1.0, 0.0, 0.5,
+            0.0, 0.0, 1.0, 0.5,
             0.0, 1.0, 0.0, 1.0,
             0.0, 0.0, 0.0, 1.0,
             0.0, 0.0, 1.0, 1.0,
@@ -108,10 +120,10 @@ export class WebglTest {
     }
 
     vertexShaderObj (): string {
-        let vertexShader: string = 
+        let vertexShader: string =
         `   #version 300 es
             // ↑一行目に必ず記述
-            
+
             // jsから入力される値は必ずinで定義
             // 頂点座標：x、y、z の3要素のベクトル
             // 頂点色：r、g、b、a　の4要素のベクトル
@@ -132,7 +144,7 @@ export class WebglTest {
     }
 
     fragmentShaderObj () : string {
-        let fragmentShader: string = 
+        let fragmentShader: string =
         `   #version 300 es
             // float の精度を指定する
             // lowp midiump highp etc.
