@@ -1,4 +1,4 @@
-export class WebglTest {
+export class WebglTest2 {
 
     private wrap: HTMLElement;
     private canvas: HTMLCanvasElement;
@@ -44,7 +44,7 @@ export class WebglTest {
 
         // 四角形の描画
         const VERTEX_NUMS = 6;
-        this.gl.drawArrays(this.gl.TRIANGLES, 0, VERTEX_NUMS);
+        this.gl.drawArrays(this.gl.LINE_LOOP, 0, VERTEX_NUMS);
 
         // webgl描画
         this.gl.flush();
@@ -172,7 +172,7 @@ export class WebglTest {
             0.0, 0.0, 1.0, 1.0,
             0.0, 1.0, 0.0, 1.0,
             0.0, 0.0, 0.0, 1.0,
-            0.0, 0.0, 1.0, 1.0,
+            0.0, 0.0, 1.0, 1.0
         ]);
 
         // バインドしてデータを転送
