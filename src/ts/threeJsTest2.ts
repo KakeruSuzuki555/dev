@@ -140,7 +140,7 @@ export class ThreeJsTest2 {
         `   varying float vSample;
             varying vec2 vUv;
             uniform float uAspect; // 画面のアスペクト比率
-            uniform float uTime;
+            uniform float uTime; // 時間
             void main() {
                 vec2 uv = vec2(vUv.x * uAspect, vUv.y);
                 vec2 center = vec2(0.5 * uAspect, 0.5);
