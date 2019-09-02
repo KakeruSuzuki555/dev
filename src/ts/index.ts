@@ -4,6 +4,6 @@ import { ThreeJsTest } from './threeJsTest'
 import { ThreeJsTest2 } from './threeJsTest2'
 import '../css/index.scss'
 // new WebglTest();
-new WebglTest2();
+// new WebglTest2();
 // new ThreeJsTest();
-// new ThreeJsTest2();
+new ThreeJsTest2();
