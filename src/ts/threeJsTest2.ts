@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Vec2, ShaderMaterial } from 'three';
+import { Vec2, ShaderMaterial} from 'three';
 
 export class ThreeJsTest2 {
 
@@ -29,6 +29,10 @@ export class ThreeJsTest2 {
 
     private mouseX: number = 0;
 
+    private mouse: THREE.Vector2;
+
+    private targetRadius: number;
+
     private pointMesh: THREE.Points; 
 
     private uniforms: any;
@@ -41,18 +45,24 @@ export class ThreeJsTest2 {
 
         this.canvas.width = this.wrap.offsetWidth;
         this.canvas.height = this.wrap.offsetHeight;
-
+        /** イベントセット */
+        this.mouseEvent();
+        this.mouse = new THREE.Vector2(0.5, 0.5);
+        this.targetRadius = 0.005; // 半径の目標値
         this.uniforms = {
             uAspect: {
                 value: this.canvas.width / this.canvas.height
             },
             uTime: {
                 value: 0.0
+            },
+            uMouse: {
+                value: new THREE.Vector2(0.5, 0.5)
+            },
+            uRadius: {
+                value: this.targetRadius
             }
         }
-
-        /** イベントセット */
-        this.mouseEvent();
 
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas
@@ -83,15 +93,36 @@ export class ThreeJsTest2 {
         this.directionalLight = new THREE.DirectionalLight(0xFFFFFF);
         this.directionalLight.position.set(1, 1, 1);
 
-
         this.scene.add(this.directionalLight);
         this.tick();
     }
 
     mouseEvent () {
         document.addEventListener("mousemove", (event) => {
-            this.mouseX = event.pageX;
-        })
+            // this.mouseX = event.pageX;
+            this.mouseMoved(event.clientX, event.clientY);
+        });
+        document.addEventListener("mousedown", (event) => {
+            this.mousePressed(event.clientX, event.clientY);
+        });
+        document.addEventListener("mouseup", (event) => {
+            this.mouseReleased(event.clientX, event.clientY);
+        });
+    }
+
+    mouseMoved(x: number, y: number): void {
+        this.mouse.x = x / this.canvas.width;
+        this.mouse.y = 1.0 - (y / this.canvas.height);
+    }
+
+    mousePressed (x: number, y: number): void {
+        this.mouseMoved(x, y);
+        this.targetRadius = 0.25;
+    }
+
+    mouseReleased(x: number, y: number) {
+        this.mouseMoved(x, y);
+        this.targetRadius = 0.005;
     }
 
     createStarField () {
@@ -124,8 +155,8 @@ export class ThreeJsTest2 {
 
             void main () {
                 vSample = 1.0;
-                vUv = uv;
-                vec3 pos = position;
+                vUv = uv; // uv: ShaderMaterialで補完されるvec2型(x, y)の変数。テクスチャ座標。
+                vec3 pos = position; // ShaderMatetialで補完されるvec3型(xyz)の変数。ジオメトリ頂点。
                 // pos.y = (pos.y * 0.5) + sin(pos.x * 3.0) * 0.5;
                 // 頂点座標を決定するにはgl_Position変数へ書き込む
                 // 頂点座標はx、y、z、wの4つになるためvec3からvec4へ変換
@@ -138,14 +169,17 @@ export class ThreeJsTest2 {
     fragmentShaderObj () : string {
         let fragmentShader: string =
         `   varying float vSample;
-            varying vec2 vUv;
+            varying vec2 vUv; // 
             uniform float uAspect; // 画面のアスペクト比率
             uniform float uTime; // 時間
+            uniform vec2 uMouse; // マウス座標
+            uniform float uRadius; // 半径
+
             void main() {
                 vec2 uv = vec2(vUv.x * uAspect, vUv.y);
-                vec2 center = vec2(0.5 * uAspect, 0.5);
+                vec2 center = vec2(uMouse.x * uAspect, uMouse.y);
                 float radius = 0.05 + sin(uTime * 2.0) * 0.025;
-                float lightness = radius / length(uv - center);
+                float lightness = uRadius / length(uv - center);
                 vec4 color = vec4(vec3(lightness), 1.0);
                 color *= vec4(0.2, 0.5, 1.0, 1.0);
                 gl_FragColor = color;
@@ -173,7 +207,10 @@ export class ThreeJsTest2 {
         this.uniforms.uTime.value = sec;
         // this.camera.position.x = 1000 * Math.sin(radian);
         // this.camera.position.y = 1000 * Math.cos(radian);
+        
+        this.uniforms.uMouse.value.lerp(this.mouse, 0.2);
 
+        this.uniforms.uRadius.value += (this.targetRadius - this.uniforms.uRadius.value) * 0.1;
         this.camera.lookAt(new THREE.Vector3(0, 0, 0));
         this.renderer.render(this.scene, this.camera);
 
