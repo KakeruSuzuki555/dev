@@ -76,7 +76,21 @@ export class ThreeJsTest2 {
         this.camera = new THREE.PerspectiveCamera(45, this.wrap.offsetWidth / this.wrap.offsetHeight);
         this.camera.position.set(0, 0, +1000);
 
-        const geometry = new THREE.PlaneGeometry(2, 2, 1, 1);
+        const planeGeometry = new THREE.PlaneGeometry(2, 2, 1, 1);
+        const customGeometry = new THREE.Geometry();
+        let vertices: Array<THREE.Vector3> = [
+            new THREE.Vector3(-1, -1, 0),
+            new THREE.Vector3(1, -1, 0),
+            new THREE.Vector3(0, 4, 0),
+            new THREE.Vector3(-1, 2, 0),
+            new THREE.Vector3(1, 2, 0),
+        ]
+        let face: Array<THREE.Face3> = [
+            new THREE.Face3(0, 1, 2),
+             new THREE.Face3(3, 4, 5)
+        ]
+        customGeometry.vertices = vertices;
+        customGeometry.faces = face;
         const material: THREE.ShaderMaterial = new ShaderMaterial({
             uniforms: this.uniforms,
             vertexShader: this.vertexShaderObj(),
@@ -86,7 +100,8 @@ export class ThreeJsTest2 {
         // this.sphereGeometry = new THREE.SphereGeometry(300, 30, 30);
         // this.material = new THREE.MeshStandardMaterial({color:0xFF0000});
         // this.box = new THREE.Mesh(this.sphereGeometry, this.material);
-        const mesh = new THREE.Mesh(geometry, material);
+        // const mesh = new THREE.Mesh(customGeometry, material);
+        const mesh = new THREE.Mesh(planeGeometry, material);
         this.scene.add(mesh);
         this.pointMesh = new THREE.Points();
         this.createStarField();
@@ -178,7 +193,7 @@ export class ThreeJsTest2 {
             void main() {
                 vec2 uv = vec2(vUv.x * uAspect, vUv.y);
                 vec2 center = vec2(uMouse.x * uAspect, uMouse.y);
-                float radius = 0.05 + sin(uTime * 2.0) * 0.025;
+                // float radius = 0.05 + sin(uTime * 2.0) * 0.025;
                 float lightness = uRadius / length(uv - center);
                 vec4 color = vec4(vec3(lightness), 1.0);
                 color *= vec4(0.2, 0.5, 1.0, 1.0);
